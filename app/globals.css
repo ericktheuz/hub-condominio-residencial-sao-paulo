@@ -21,6 +21,30 @@ button { cursor: pointer; }
 
 .dark { color-scheme: light; }
 
+/* Identidade visual do Residencial São Paulo: vinho, azul-marinho e neutros claros */
+:root { --background: #f7f4ef; --foreground: #202124; --card: #fffdfa; --card-foreground: #202124; --popover: #fffdfa; --popover-foreground: #202124; --primary: #6d1f2b; --primary-foreground: #fffdfa; --secondary: #eee8e1; --secondary-foreground: #1d2638; --muted: #eee8e1; --muted-foreground: #8d8580; --accent: #e9d9d8; --accent-foreground: #6d1f2b; --border: #ddd5ce; --input: #d2c8c0; --ring: #a87579; }
+.sidebar { background: #1d2638; color: #eee8e1; }
+.brand { padding-bottom: 24px; }
+.brand-logo-wrap { width: 118px; height: 48px; overflow: hidden; display: grid; place-items: center; background: #fffdfa; border: 1px solid #ddd5ce; }
+.brand-logo { width: 100%; height: 100%; object-fit: cover; object-position: center; }
+.brand-copy strong { color: #fffdfa; letter-spacing: .12em; }
+.brand-copy span { color: #c9bdba; }
+.property-switcher { background: #273247; border-color: #43506a; }
+.nav-item { color: #c9bdba; }
+.nav-item:hover, .nav-item.active { background: #6d1f2b; color: #fffdfa; }
+.nav-item.active svg { color: #fffdfa; }
+.nav-label { color: #a99b97; }
+.property-avatar { background: #a87579; color: #1d2638; }
+.support-card { border-color: #43506a; color: #c9bdba; }
+.support-card strong { color: #eee8e1; }
+.user-row { border-color: #43506a; }
+.resident-hero { background: #6d1f2b; }
+.stat-card.featured { background: #6d1f2b; }
+.primary-button, .status-banner button { background: #6d1f2b; color: #fffdfa; }
+.text-button, .good-text { color: #6d1f2b; }
+.small-icon.teal { color: #6d1f2b; background: #e9d9d8; }
+.rule-chips span { background: #f3ece7; color: #6d1f2b; border-color: #ddd5ce; }
+
 /* Ajustes finais de legibilidade e composição */
 .resident-hero { display:flex; align-items:center; justify-content:space-between; gap:24px; padding:24px 26px; margin:24px 0; background:#1f7773; color:#fff; border-radius:12px; }
 .resident-hero h2 { margin:8px 0 6px; font-size:24px; color:#fff; }

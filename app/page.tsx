@@ -27,7 +27,7 @@ export default function Home() {
 
   return <div className="app-shell">
     <aside className={`sidebar ${sidebarOpen ? 'sidebar-open' : ''}`}>
-      <div className="brand"><div className="brand-mark"><Building2 size={19}/></div><div><strong>HUB</strong><span>Gestão condominial</span></div><button className="icon-button mobile-close" onClick={() => setSidebarOpen(false)} aria-label="Fechar menu"><X size={18}/></button></div>
+      <div className="brand"><div className="brand-logo-wrap"><img className="brand-logo" src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-4VO3W2a1mjxHjIRq0mtvlVT7xMbGUy.png" alt="Residencial São Paulo" /></div><div className="brand-copy"><strong>HUB</strong><span>Gestão condominial</span></div><button className="icon-button mobile-close" onClick={() => setSidebarOpen(false)} aria-label="Fechar menu"><X size={18}/></button></div>
       <div className="property-switcher"><div className="property-avatar">CS</div><div><span>Condomínio</span><strong>Residencial São Paulo</strong></div><ChevronDown size={15}/></div>
       <p className="nav-label">Acesso rápido</p>
       <button className={`nav-item ${mode === 'morador' ? 'active' : ''}`} onClick={() => { setMode('morador'); setSidebarOpen(false) }}><HomeIcon size={18}/><span>Meu apartamento</span></button>
