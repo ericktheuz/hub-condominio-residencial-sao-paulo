@@ -1,90 +1,59 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import {
-  ArrowDownRight,
-  ArrowUpRight,
-  Bell,
-  Building2,
-  CalendarDays,
-  ChevronDown,
-  CircleHelp,
-  Droplets,
-  FileText,
-  Home as HomeIcon,
-  LayoutDashboard,
-  Menu,
-  MoreHorizontal,
-  Receipt,
-  Search,
-  Settings,
-  ShieldCheck,
-  Users,
-  Wallet,
-  Wrench,
-  X,
-  Zap,
-} from 'lucide-react'
+import { Building2, CalendarDays, CheckCircle2, ChevronDown, CircleHelp, Droplets, FileText, Home as HomeIcon, KeyRound, LayoutDashboard, LockKeyhole, Menu, Receipt, Settings, ShieldCheck, Users, Wallet, Wrench, X, Zap, ArrowUpRight, AlertTriangle } from 'lucide-react'
 
-const expenses = [
-  { name: 'Energia elétrica', type: 'Consumo comum', value: 1280, color: 'expense-blue' },
-  { name: 'Água e saneamento', type: 'Consumo comum', value: 960, color: 'expense-teal' },
-  { name: 'Limpeza e conservação', type: 'Serviço mensal', value: 1400, color: 'expense-orange' },
-  { name: 'Manutenção preventiva', type: 'Fundo de reserva', value: 720, color: 'expense-violet' },
-]
-
-const units = [
-  ['Bloco A', '101', 'Mariana Costa', 'Em dia', 'ok'],
-  ['Bloco A', '102', 'Rafael Mendes', 'Em dia', 'ok'],
-  ['Bloco A', '103', 'Camila Nunes', 'Pendente', 'pending'],
-  ['Bloco A', '104', 'João Ribeiro', 'Em dia', 'ok'],
-  ['Bloco B', '101', 'Fernanda Alves', 'Em dia', 'ok'],
-  ['Bloco B', '102', 'Lucas Martins', 'Em dia', 'ok'],
-]
-
-function formatCurrency(value: number) {
-  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)
+const blocos = { 'Bloco I': ['101','102','201','202','301','302','401','402'], 'Bloco II': ['103','104','203','204','303','304','403','404'] }
+const moradores: Record<string, { nome: string; moradores: number; area: string; status: string; agua: string; energia: string; vencimento: string; valor: number }> = {
+  '101': { nome: 'Mariana Costa', moradores: 3, area: '58,20 m²', status: 'Em dia', agua: '7,8 m³', energia: '142 kWh', vencimento: '10/09/2026', valor: 486.32 },
+  '102': { nome: 'Rafael Mendes', moradores: 2, area: '58,20 m²', status: 'Em dia', agua: '6,2 m³', energia: '128 kWh', vencimento: '10/09/2026', valor: 486.32 },
+  '201': { nome: 'Camila Nunes', moradores: 2, area: '58,20 m²', status: 'Pendente', agua: '8,6 m³', energia: '156 kWh', vencimento: '10/08/2026', valor: 512.9 },
+  '202': { nome: 'João Ribeiro', moradores: 4, area: '58,20 m²', status: 'Em dia', agua: '10,1 m³', energia: '174 kWh', vencimento: '10/09/2026', valor: 486.32 },
 }
+
+function money(value: number) { return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value) }
 
 export default function Home() {
+  const [mode, setMode] = useState<'morador'|'sindico'>('morador')
+  const [selected, setSelected] = useState('101')
+  const [passwordOpen, setPasswordOpen] = useState(false)
+  const [password, setPassword] = useState('')
+  const [passwordError, setPasswordError] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [month, setMonth] = useState('Agosto 2026')
-  const [activeNav, setActiveNav] = useState('Visão geral')
-  const [showAllUnits, setShowAllUnits] = useState(false)
-  const totalExpenses = useMemo(() => expenses.reduce((sum, expense) => sum + expense.value, 0), [])
-  const visibleUnits = showAllUnits ? units : units.slice(0, 4)
+  const apt = moradores[selected] || { nome: 'Morador da unidade', moradores: 0, area: '58,20 m²', status: 'Em dia', agua: '—', energia: '—', vencimento: '10/09/2026', valor: 486.32 }
+  const block = Object.entries(blocos).find(([, units]) => units.includes(selected))?.[0] || 'Bloco I'
+  const allUnits = useMemo(() => Object.values(blocos).flat(), [])
+  const enterSindico = () => { if (password === '1234') { setMode('sindico'); setPasswordOpen(false); setPassword(''); setPasswordError(false) } else setPasswordError(true) }
 
-  return (
-    <div className="app-shell">
-      <aside className={`sidebar ${sidebarOpen ? 'sidebar-open' : ''}`}>
-        <div className="brand">
-          <div className="brand-mark"><Building2 size={19} strokeWidth={2.5} /></div>
-          <div><strong>HUB</strong><span>Gestão condominial</span></div>
-          <button className="icon-button mobile-close" onClick={() => setSidebarOpen(false)} aria-label="Fechar menu"><X size={18} /></button>
-        </div>
-        <div className="property-switcher"><div className="property-avatar">CS</div><div><span>Condomínio</span><strong>Residencial São Paulo</strong></div><ChevronDown size={15} /></div>
-        <nav aria-label="Navegação principal">
-          <p className="nav-label">Menu principal</p>
-          {[
-            [LayoutDashboard, 'Visão geral'], [Wallet, 'Financeiro'], [Receipt, 'Contas e rateios'], [Droplets, 'Leituras'], [Users, 'Moradores'], [Wrench, 'Manutenções'],
-          ].map(([Icon, label]) => <button key={label as string} className={`nav-item ${activeNav === label ? 'active' : ''}`} onClick={() => { setActiveNav(label as string); setSidebarOpen(false) }}><Icon size={18} /><span>{label as string}</span>{label === 'Contas e rateios' && <span className="nav-badge">3</span>}</button>)}
-          <p className="nav-label nav-label-spaced">Administração</p>
-          {[[FileText, 'Documentos'], [Settings, 'Configurações']].map(([Icon, label]) => <button key={label as string} className={`nav-item ${activeNav === label ? 'active' : ''}`} onClick={() => setActiveNav(label as string)}><Icon size={18} /><span>{label as string}</span></button>)}
-        </nav>
-        <div className="sidebar-bottom"><div className="support-card"><CircleHelp size={17} /><div><strong>Precisa de ajuda?</strong><span>Fale com o suporte HUB</span></div></div><div className="user-row"><div className="user-avatar">AS</div><div><strong>Administração</strong><span>Administrador</span></div><MoreHorizontal size={18} /></div></div>
-      </aside>
-      {sidebarOpen && <button className="sidebar-overlay" aria-label="Fechar menu" onClick={() => setSidebarOpen(false)} />}
-      <main className="main-content">
-        <header className="topbar"><button className="icon-button menu-trigger" onClick={() => setSidebarOpen(true)} aria-label="Abrir menu"><Menu size={21} /></button><div className="breadcrumb"><span>Gestão</span><span>/</span><strong>{activeNav}</strong></div><div className="topbar-actions"><button className="icon-button" aria-label="Pesquisar"><Search size={19} /></button><button className="notification-button" aria-label="Notificações"><Bell size={19} /><i /></button><div className="top-user"><div className="user-avatar">AS</div><ChevronDown size={15} /></div></div></header>
-        <div className="content-wrap">
-          <section className="welcome-row"><div><p className="eyebrow">QUARTA-FEIRA, 26 DE AGOSTO DE 2026</p><h1>Bom dia, Administração</h1><p className="subtitle">Acompanhe o que acontece no seu condomínio.</p></div><div className="month-control"><CalendarDays size={17} /><select value={month} onChange={(e) => setMonth(e.target.value)} aria-label="Selecionar competência"><option>Agosto 2026</option><option>Julho 2026</option><option>Junho 2026</option></select><ChevronDown size={15} /></div></section>
-          <section className="status-banner"><div className="status-icon"><ShieldCheck size={19} /></div><div><strong>Fechamento de agosto em andamento</strong><span>Confira as últimas pendências antes de concluir o mês.</span></div><button>Ver pendências <ArrowUpRight size={15} /></button></section>
-          <section className="stats-grid"><article className="stat-card featured"><div className="stat-heading"><span>Saldo em conta</span><span className="stat-icon"><Wallet size={17} /></span></div><strong>{formatCurrency(12480.55)}</strong><div className="stat-foot positive"><ArrowUpRight size={14} /> 8,2% <span>vs. mês anterior</span></div></article><article className="stat-card"><div className="stat-heading"><span>Despesas do mês</span><span className="stat-icon orange"><Receipt size={17} /></span></div><strong>{formatCurrency(totalExpenses)}</strong><div className="stat-foot"><span>de {formatCurrency(5800)} previstos</span></div><div className="progress"><i style={{ width: '75%' }} /></div></article><article className="stat-card"><div className="stat-heading"><span>Inadimplência</span><span className="stat-icon red"><ArrowDownRight size={17} /></span></div><strong>6,25%</strong><div className="stat-foot negative"><ArrowDownRight size={14} /> 1,4% <span>vs. mês anterior</span></div></article><article className="stat-card"><div className="stat-heading"><span>Unidades ocupadas</span><span className="stat-icon teal"><HomeIcon size={17} /></span></div><strong>15 <small>/ 16</small></strong><div className="stat-foot"><span>93,75% de ocupação</span></div></article></section>
-          <section className="content-grid"><article className="panel expenses-panel"><div className="panel-header"><div><h2>Despesas por categoria</h2><p>Distribuição dos gastos em {month.toLowerCase()}</p></div><button className="text-button">Ver relatório <ArrowUpRight size={15} /></button></div><div className="expense-total"><strong>{formatCurrency(totalExpenses)}</strong><span>Total realizado</span></div><div className="expense-bars">{expenses.map((expense) => <div className="expense-line" key={expense.name}><div className={`expense-dot ${expense.color}`} /><div className="expense-name"><strong>{expense.name}</strong><span>{expense.type}</span></div><div className="expense-bar"><i style={{ width: `${(expense.value / 1500) * 100}%` }} /></div><strong className="expense-value">{formatCurrency(expense.value)}</strong></div>)}</div></article><article className="panel readings-panel"><div className="panel-header"><div><h2>Leituras do mês</h2><p>Acompanhamento de consumo</p></div><button className="dots-button" aria-label="Mais opções"><MoreHorizontal size={19} /></button></div><div className="reading-highlight"><div className="reading-icon"><Droplets size={20} /></div><div><strong>Água</strong><span>Consumo total</span></div><div className="reading-number"><strong>118,4 m³</strong><span><ArrowDownRight size={13} /> 4,8%</span></div></div><div className="reading-row"><div className="small-icon yellow"><Zap size={17} /></div><div><strong>Energia comum</strong><span>Última leitura: 24/08</span></div><span className="reading-status">16 / 16</span></div><div className="reading-row"><div className="small-icon blue"><Droplets size={17} /></div><div><strong>Hidrômetros</strong><span>Última leitura: 25/08</span></div><span className="reading-status partial">14 / 16</span></div><button className="outline-button">Lançar leituras <ArrowUpRight size={15} /></button></article></section>
-          <section className="panel units-panel"><div className="panel-header"><div><h2>Unidades</h2><p>Visão rápida das unidades do condomínio</p></div><button className="text-button" onClick={() => setShowAllUnits(!showAllUnits)}>{showAllUnits ? 'Mostrar menos' : 'Ver todas'} <ArrowUpRight size={15} /></button></div><div className="table-wrap"><table><thead><tr><th>Bloco</th><th>Unidade</th><th>Morador principal</th><th>Status financeiro</th><th /></tr></thead><tbody>{visibleUnits.map(([block, unit, resident, status, state]) => <tr key={`${block}-${unit}`}><td><span className="block-label">{block}</span></td><td><strong>{unit}</strong></td><td>{resident}</td><td><span className={`pill ${state}`}>{status}</span></td><td><button className="dots-button" aria-label={`Opções da unidade ${unit}`}><MoreHorizontal size={17} /></button></td></tr>)}</tbody></table></div></section>
-          <footer><span>HUB Gestão Condominial</span><span>Residencial São Paulo · Heliópolis, Belo Horizonte</span><span>Dados atualizados há 5 min</span></footer>
-        </div>
-      </main>
-    </div>
-  )
+  return <div className="app-shell">
+    <aside className={`sidebar ${sidebarOpen ? 'sidebar-open' : ''}`}>
+      <div className="brand"><div className="brand-mark"><Building2 size={19}/></div><div><strong>HUB</strong><span>Gestão condominial</span></div><button className="icon-button mobile-close" onClick={() => setSidebarOpen(false)} aria-label="Fechar menu"><X size={18}/></button></div>
+      <div className="property-switcher"><div className="property-avatar">CS</div><div><span>Condomínio</span><strong>Residencial São Paulo</strong></div><ChevronDown size={15}/></div>
+      <p className="nav-label">Acesso rápido</p>
+      <button className={`nav-item ${mode === 'morador' ? 'active' : ''}`} onClick={() => { setMode('morador'); setSidebarOpen(false) }}><HomeIcon size={18}/><span>Meu apartamento</span></button>
+      <button className={`nav-item ${mode === 'sindico' ? 'active' : ''}`} onClick={() => { setPasswordOpen(true); setSidebarOpen(false) }}><LockKeyhole size={18}/><span>Modo Síndico</span></button>
+      <p className="nav-label nav-label-spaced">Informações</p>
+      <button className="nav-item"><FileText size={18}/><span>Regras do condomínio</span></button><button className="nav-item"><CircleHelp size={18}/><span>Ajuda e suporte</span></button>
+      <div className="sidebar-bottom"><div className="support-card"><ShieldCheck size={17}/><div><strong>Seu condomínio, mais simples</strong><span>Acesso seguro às informações</span></div></div><div className="user-row"><div className="user-avatar">{mode === 'morador' ? selected : 'AS'}</div><div><strong>{mode === 'morador' ? `Apartamento ${selected}` : 'Administração'}</strong><span>{mode === 'morador' ? 'Morador' : 'Síndico'}</span></div></div></div>
+    </aside>
+    {sidebarOpen && <button className="sidebar-overlay" aria-label="Fechar menu" onClick={() => setSidebarOpen(false)}/>} 
+    <main className="main-content">
+      <header className="topbar"><button className="icon-button menu-trigger" onClick={() => setSidebarOpen(true)} aria-label="Abrir menu"><Menu size={21}/></button><div className="breadcrumb"><span>HUB</span><span>/</span><strong>{mode === 'morador' ? 'Meu apartamento' : 'Visão geral'}</strong></div><div className="topbar-actions"><button className="icon-button" aria-label="Configurações"><Settings size={19}/></button><div className="top-user"><div className="user-avatar">{mode === 'morador' ? selected : 'AS'}</div><ChevronDown size={15}/></div></div></header>
+      <div className="content-wrap">
+        {mode === 'morador' ? <ResidentView apt={apt} selected={selected} setSelected={setSelected} block={block} allUnits={allUnits}/> : <AdminView/>}
+        <footer><span>HUB Gestão Condominial</span><span>Residencial São Paulo · Heliópolis, Belo Horizonte</span><span>Dados demonstrativos</span></footer>
+      </div>
+    </main>
+    {passwordOpen && <div className="modal-backdrop" role="presentation"><div className="password-modal" role="dialog" aria-modal="true" aria-labelledby="password-title"><button className="modal-close" onClick={() => setPasswordOpen(false)} aria-label="Fechar"><X size={18}/></button><div className="modal-icon"><LockKeyhole size={22}/></div><p className="eyebrow">ÁREA RESTRITA</p><h2 id="password-title">Acesso do síndico</h2><p>Digite a senha administrativa para acessar a visão geral do condomínio.</p><label htmlFor="admin-password">Senha</label><input id="admin-password" type="password" value={password} onChange={e => { setPassword(e.target.value); setPasswordError(false) }} onKeyDown={e => e.key === 'Enter' && enterSindico()} autoFocus placeholder="Digite sua senha"/>{passwordError && <span className="form-error">Senha incorreta. Tente novamente.</span>}<button className="primary-button" onClick={enterSindico}>Entrar no modo Síndico <ArrowUpRight size={15}/></button><small>Para demonstração, use a senha 1234.</small></div></div>}
+  </div>
 }
+
+function ResidentView({ apt, selected, setSelected, block, allUnits }: any) { return <>
+  <section className="welcome-row"><div><p className="eyebrow">ÁREA DO MORADOR</p><h1>Olá, {apt.nome.split(' ')[0]}</h1><p className="subtitle">Confira as informações do seu apartamento.</p></div><div className="unit-picker"><HomeIcon size={17}/><select value={selected} onChange={e => setSelected(e.target.value)} aria-label="Selecionar apartamento">{Object.entries(blocos).map(([name, units]) => <optgroup label={name} key={name}>{units.map(unit => <option key={unit} value={unit}>Apartamento {unit}</option>)}</optgroup>)}</select><ChevronDown size={15}/></div></section>
+  <section className="resident-hero"><div><div className="unit-kicker"><span>{block}</span><span>·</span><span>2º andar</span></div><h2>Apartamento {selected}</h2><p>{apt.area} · {apt.moradores} moradores cadastrados</p></div><div className={`resident-status ${apt.status === 'Em dia' ? 'ok' : 'pending'}`}><CheckCircle2 size={18}/>{apt.status}</div></section>
+  <section className="stats-grid"><article className="stat-card featured"><div className="stat-heading"><span>Próxima taxa condominial</span><span className="stat-icon"><Wallet size={17}/></span></div><strong>{money(apt.valor)}</strong><div className="stat-foot"><span>Vencimento em {apt.vencimento}</span></div></article><article className="stat-card"><div className="stat-heading"><span>Consumo de água</span><span className="stat-icon teal"><Droplets size={17}/></span></div><strong>{apt.agua}</strong><div className="stat-foot"><span>Leitura de agosto</span></div></article><article className="stat-card"><div className="stat-heading"><span>Energia da unidade</span><span className="stat-icon orange"><Zap size={17}/></span></div><strong>{apt.energia}</strong><div className="stat-foot"><span>Leitura de agosto</span></div></article></section>
+  <section className="content-grid"><article className="panel"><div className="panel-header"><div><h2>Resumo financeiro</h2><p>Movimentações da unidade em agosto 2026</p></div><button className="text-button">Ver extrato <ArrowUpRight size={15}/></button></div><div className="info-list"><div><div className="small-icon blue"><Receipt size={17}/></div><span>Taxa condominial de agosto<strong>{money(apt.valor)}</strong></span><b className={apt.status === 'Em dia' ? 'good-text' : 'warning-text'}>{apt.status}</b></div><div><div className="small-icon yellow"><CalendarDays size={17}/></div><span>Próximo vencimento<strong>{apt.vencimento}</strong></span><b>Mensal</b></div></div></article><article className="panel"><div className="panel-header"><div><h2>Comunicados</h2><p>Informações importantes</p></div><BellIcon/></div><div className="notice"><AlertTriangle size={18}/><div><strong>Assembleia condominial</strong><span>Próxima reunião em 15/09, às 19h.</span></div></div><div className="notice neutral"><FileText size={18}/><div><strong>Regulamento disponível</strong><span>Consulte as regras e horários do condomínio.</span></div></div></article></section>
+  <section className="panel rules-panel"><div className="panel-header"><div><h2>Regras e informações</h2><p>Convivência do Residencial São Paulo</p></div><button className="text-button">Ver todas <ArrowUpRight size={15}/></button></div><div className="rule-chips"><span>Silêncio: 22h às 7h</span><span>Visitantes: cadastro na portaria</span><span>Áreas comuns: reserva prévia</span><span>Animais: circulação com guia</span></div></section>
+</> }
+function BellIcon() { return <div className="small-icon teal"><ShieldCheck size={17}/></div> }
+function AdminView() { return <><section className="welcome-row"><div><p className="eyebrow">VISÃO ADMINISTRATIVA · MODO SÍNDICO</p><h1>Bom dia, Síndico</h1><p className="subtitle">Acompanhe a saúde financeira e operacional do condomínio.</p></div><div className="month-control"><CalendarDays size={17}/><select aria-label="Selecionar competência"><option>Agosto 2026</option><option>Julho 2026</option></select><ChevronDown size={15}/></div></section><section className="status-banner"><div className="status-icon"><ShieldCheck size={19}/></div><div><strong>Fechamento de agosto em andamento</strong><span>3 pendências aguardam sua revisão.</span></div><button>Ver pendências <ArrowUpRight size={15}/></button></section><section className="stats-grid"><article className="stat-card featured"><div className="stat-heading"><span>Saldo em conta</span><span className="stat-icon"><Wallet size={17}/></span></div><strong>R$ 12.480,55</strong><div className="stat-foot positive">▲ 8,2% <span>vs. mês anterior</span></div></article><article className="stat-card"><div className="stat-heading"><span>Despesas do mês</span><span className="stat-icon orange"><Receipt size={17}/></span></div><strong>R$ 4.360,00</strong><div className="stat-foot"><span>75% do previsto</span></div><div className="progress"><i style={{width:'75%'}}/></div></article><article className="stat-card"><div className="stat-heading"><span>Inadimplência</span><span className="stat-icon red"><AlertTriangle size={17}/></span></div><strong>6,25%</strong><div className="stat-foot negative">▼ 1,4% <span>vs. mês anterior</span></div></article><article className="stat-card"><div className="stat-heading"><span>Unidades ocupadas</span><span className="stat-icon teal"><Home size={17}/></span></div><strong>15 <small>/ 16</small></strong><div className="stat-foot"><span>93,75% de ocupação</span></div></article></section><section className="content-grid"><article className="panel expenses-panel"><div className="panel-header"><div><h2>Despesas por categoria</h2><p>Distribuição dos gastos em agosto</p></div></div><div className="expense-total"><strong>R$ 4.360,00</strong><span>Total realizado</span></div>{[['Energia elétrica','R$ 1.280,00','expense-blue'],['Água e saneamento','R$ 960,00','expense-teal'],['Limpeza e conservação','R$ 1.400,00','expense-orange'],['Manutenção preventiva','R$ 720,00','expense-violet']].map(([name,value,color],i) => <div className="expense-line" key={name}><div className={`expense-dot ${color}`}/><div className="expense-name"><strong>{name}</strong><span>{i === 2 ? 'Serviço mensal' : 'Consumo comum'}</span></div><div className="expense-bar"><i style={{width:`${[85,64,93,48][i]}%`}}/></div><strong className="expense-value">{value}</strong></div>)}</article><article className="panel"><div className="panel-header"><div><h2>Inadimplência</h2><p>Unidades com pendências</p></div><AlertTriangle size={19}/></div><div className="notice"><AlertTriangle size={18}/><div><strong>Apartamento 201</strong><span>Taxa de agosto · R$ 512,90</span></div><b className="warning-text">Pendente</b></div><div className="notice neutral"><CheckCircle2 size={18}/><div><strong>15 unidades em dia</strong><span>93,75% de adimplência no mês.</span></div></div></article></section></> }
