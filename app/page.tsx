@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { Building2, CalendarDays, CheckCircle2, ChevronDown, CircleHelp, Droplets, FileText, Home as HomeIcon, KeyRound, LayoutDashboard, LockKeyhole, Menu, Receipt, Settings, ShieldCheck, Users, Wallet, Wrench, X, Zap, ArrowUpRight, AlertTriangle } from 'lucide-react'
+import { Building2, CalendarDays, CheckCircle2, ChevronDown, CircleHelp, Droplets, FileText, Home as HomeIcon, KeyRound, LayoutDashboard, LockKeyhole, Menu, Receipt, Settings, ShieldCheck, Users, Wallet, Wrench, X, Zap, ArrowUpRight, AlertTriangle, UserRound } from 'lucide-react'
 
 const blocos = { 'Bloco I': ['101','102','201','202','301','302','401','402'], 'Bloco II': ['103','104','203','204','303','304','403','404'] }
 const moradores: Record<string, { nome: string; moradores: number; area: string; status: string; agua: string; energia: string; vencimento: string; valor: number }> = {
@@ -27,7 +27,7 @@ export default function Home() {
 
   return <div className="app-shell">
     <aside className={`sidebar ${sidebarOpen ? 'sidebar-open' : ''}`}>
-      <div className="brand"><div className="brand-logo-wrap"><img className="brand-logo" src="/residencial-sao-paulo.jpg" alt="Residencial São Paulo" /></div><div className="brand-copy"><strong>HUB</strong><span>Gestão condominial</span></div><button className="icon-button mobile-close" onClick={() => setSidebarOpen(false)} aria-label="Fechar menu"><X size={18}/></button></div>
+      <div className="brand"><img className="brand-logo-top" src="/residencial-sao-paulo-logo.png" alt="Residencial São Paulo" /><div className="brand-copy"><strong>HUB</strong><span>Gestão condominial</span></div><button className="icon-button mobile-close" onClick={() => setSidebarOpen(false)} aria-label="Fechar menu"><X size={18}/></button></div>
       <div className="property-switcher"><div className="property-avatar">CS</div><div><span>Condomínio</span><strong>Residencial São Paulo</strong></div><ChevronDown size={15}/></div>
       <p className="nav-label">Acesso rápido</p>
       <button className={`nav-item ${mode === 'morador' ? 'active' : ''}`} onClick={() => { setMode('morador'); setSidebarOpen(false) }}><HomeIcon size={18}/><span>Meu apartamento</span></button>
